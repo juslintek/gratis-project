@@ -1,38 +1,69 @@
 <?php declare(strict_types=1);
+
 namespace Gratis\Project;
 
-final class ProjectSystem
-{
-    public static function register(): void
-    {
+defined('ABSPATH') || exit;
+
+/**
+ * Project + task CPTs, task-status taxonomy and default seed terms.
+ */
+final class ProjectSystem {
+
+    public const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
+
+    /** Default board columns: slug => label. */
+    public const STATUSES = [
+        'todo'        => 'To Do',
+        'in-progress' => 'In Progress',
+        'review'      => 'Review',
+        'done'        => 'Done',
+    ];
+
+    /** Register CPTs, taxonomy and meta; seed default statuses once. */
+    public static function register(): void {
         register_post_type('gratis_project', [
-            'labels' => ['name' => 'Projects', 'singular_name' => 'Project'],
-            'public' => false, 'show_ui' => true, 'show_in_rest' => true,
-            'menu_icon' => 'dashicons-clipboard', 'supports' => ['title', 'editor', 'custom-fields'],
+            'labels'       => ['name' => __('Projects', 'gratis-project'), 'singular_name' => __('Project', 'gratis-project')],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_rest' => true,
+            'menu_icon'    => 'dashicons-clipboard',
+            'supports'     => ['title', 'editor', 'custom-fields'],
         ]);
         register_post_type('gratis_task', [
-            'labels' => ['name' => 'Tasks', 'singular_name' => 'Task'],
-            'public' => false, 'show_ui' => true, 'show_in_rest' => true,
+            'labels'       => ['name' => __('Tasks', 'gratis-project'), 'singular_name' => __('Task', 'gratis-project')],
+            'public'       => false,
+            'show_ui'      => true,
+            'show_in_rest' => true,
             'show_in_menu' => 'edit.php?post_type=gratis_project',
-            'supports' => ['title', 'editor', 'custom-fields'],
+            'supports'     => ['title', 'editor', 'custom-fields'],
         ]);
 
         register_taxonomy('task_status', 'gratis_task', [
-            'labels' => ['name' => 'Status'], 'hierarchical' => false,
-            'show_ui' => true, 'show_in_rest' => true,
+            'labels'            => ['name' => __('Status', 'gratis-project')],
+            'hierarchical'      => false,
+            'show_ui'           => true,
+            'show_in_rest'      => true,
+            'show_admin_column' => true,
         ]);
 
-        register_post_meta('gratis_task', '_project_id', ['type' => 'integer', 'single' => true, 'show_in_rest' => true]);
-        register_post_meta('gratis_task', '_assignee', ['type' => 'integer', 'single' => true, 'show_in_rest' => true]);
-        register_post_meta('gratis_task', '_due_date', ['type' => 'string', 'single' => true, 'show_in_rest' => true]);
-        register_post_meta('gratis_task', '_priority', ['type' => 'string', 'single' => true, 'show_in_rest' => true]);
+        register_post_meta('gratis_task', '_project_id', ['type' => 'integer', 'single' => true, 'show_in_rest' => true, 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_assignee', ['type' => 'integer', 'single' => true, 'show_in_rest' => true, 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_due_date', ['type' => 'string', 'single' => true, 'show_in_rest' => true, 'sanitize_callback' => 'sanitize_text_field', 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_priority', ['type' => 'string', 'single' => true, 'show_in_rest' => true, 'sanitize_callback' => 'sanitize_key', 'auth_callback' => fn() => current_user_can('edit_posts')]);
 
-        // Default statuses
-        if (!term_exists('todo', 'task_status')) {
-            wp_insert_term('To Do', 'task_status', ['slug' => 'todo']);
-            wp_insert_term('In Progress', 'task_status', ['slug' => 'in-progress']);
-            wp_insert_term('Review', 'task_status', ['slug' => 'review']);
-            wp_insert_term('Done', 'task_status', ['slug' => 'done']);
+        self::seedStatuses();
+    }
+
+    /** Insert the default status terms once (flag-guarded). */
+    private static function seedStatuses(): void {
+        if (get_option('gratis_project_seeded')) {
+            return;
         }
+        foreach (self::STATUSES as $slug => $label) {
+            if (! term_exists($slug, 'task_status')) {
+                wp_insert_term($label, 'task_status', ['slug' => $slug]);
+            }
+        }
+        update_option('gratis_project_seeded', 1, false);
     }
 }
