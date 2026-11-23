@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Gratis Project
  * Plugin URI: https://github.com/juslintek/gratis-project
- * Description: Project management with Kanban boards, tasks, and milestones. Replaces Trello/Asana for teams.
+ * Description: Project management with Kanban boards, tasks, and milestones.
  * Version: 1.0.0
  * Requires at least: 6.0
  * Requires PHP: 8.1
