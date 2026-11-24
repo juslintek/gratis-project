@@ -47,22 +47,22 @@ final class Board {
         foreach ($tasks as $task) {
             $priority = (string) get_post_meta($task->ID, '_priority', true);
             $due      = (string) get_post_meta($task->ID, '_due_date', true);
-            $cards   .= '<div class="gratis-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px">';
-            $cards   .= '<strong>' . esc_html($task->post_title) . '</strong>';
+            $cards   .= '<div class="gratis-card" style="background:#fff;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px">';
+            $cards   .= '<strong style="color:inherit">' . esc_html($task->post_title) . '</strong>';
             if ($priority !== '') {
-                $cards .= '<span style="display:inline-block;margin-left:6px;font-size:11px;color:#64748b">' . esc_html(ucfirst($priority)) . '</span>';
+                $cards .= '<span class="gratis-card-priority" style="display:inline-block;margin-left:6px;font-size:11px;color:#475569">' . esc_html(ucfirst($priority)) . '</span>';
             }
             if ($due !== '') {
-                $cards .= '<div style="font-size:12px;color:#94a3b8;margin-top:4px">' . esc_html__('Due', 'gratis-project') . ' ' . esc_html($due) . '</div>';
+                $cards .= '<div class="gratis-card-due" style="font-size:12px;color:#475569;margin-top:4px">' . esc_html__('Due', 'gratis-project') . ' ' . esc_html($due) . '</div>';
             }
             $cards .= '</div>';
         }
         if ($cards === '') {
-            $cards = '<p style="color:#94a3b8;font-size:13px">' . esc_html__('No tasks.', 'gratis-project') . '</p>';
+            $cards = '<p class="gratis-board-empty" style="color:#475569;font-size:13px">' . esc_html__('No tasks.', 'gratis-project') . '</p>';
         }
 
-        return '<div class="gratis-board-col" style="min-width:240px;background:#f1f5f9;border-radius:10px;padding:12px">'
-            . '<h3 style="margin:0 0 12px;font-size:14px">' . esc_html($label) . '</h3>'
+        return '<div class="gratis-board-col" style="min-width:240px;background:#f1f5f9;color:#0f172a;border-radius:10px;padding:12px">'
+            . '<h3 style="margin:0 0 12px;font-size:14px;color:inherit">' . esc_html($label) . '</h3>'
             . $cards
             . '</div>';
     }
