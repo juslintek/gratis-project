@@ -25,7 +25,7 @@ final class ProjectSystem {
             'labels'       => ['name' => __('Projects', 'gratis-project'), 'singular_name' => __('Project', 'gratis-project')],
             'public'       => false,
             'show_ui'      => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'menu_icon'    => 'dashicons-clipboard',
             'supports'     => ['title', 'editor', 'custom-fields'],
         ]);
@@ -33,7 +33,7 @@ final class ProjectSystem {
             'labels'       => ['name' => __('Tasks', 'gratis-project'), 'singular_name' => __('Task', 'gratis-project')],
             'public'       => false,
             'show_ui'      => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'show_in_menu' => 'edit.php?post_type=gratis_project',
             'supports'     => ['title', 'editor', 'custom-fields'],
         ]);
@@ -42,14 +42,14 @@ final class ProjectSystem {
             'labels'            => ['name' => __('Status', 'gratis-project')],
             'hierarchical'      => false,
             'show_ui'           => true,
-            'show_in_rest'      => true,
+            'show_in_rest'      => false,
             'show_admin_column' => true,
         ]);
 
-        register_post_meta('gratis_task', '_project_id', ['type' => 'integer', 'single' => true, 'show_in_rest' => true, 'auth_callback' => fn() => current_user_can('edit_posts')]);
-        register_post_meta('gratis_task', '_assignee', ['type' => 'integer', 'single' => true, 'show_in_rest' => true, 'auth_callback' => fn() => current_user_can('edit_posts')]);
-        register_post_meta('gratis_task', '_due_date', ['type' => 'string', 'single' => true, 'show_in_rest' => true, 'sanitize_callback' => 'sanitize_text_field', 'auth_callback' => fn() => current_user_can('edit_posts')]);
-        register_post_meta('gratis_task', '_priority', ['type' => 'string', 'single' => true, 'show_in_rest' => true, 'sanitize_callback' => 'sanitize_key', 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_project_id', ['type' => 'integer', 'single' => true, 'show_in_rest' => false, 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_assignee', ['type' => 'integer', 'single' => true, 'show_in_rest' => false, 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_due_date', ['type' => 'string', 'single' => true, 'show_in_rest' => false, 'sanitize_callback' => 'sanitize_text_field', 'auth_callback' => fn() => current_user_can('edit_posts')]);
+        register_post_meta('gratis_task', '_priority', ['type' => 'string', 'single' => true, 'show_in_rest' => false, 'sanitize_callback' => 'sanitize_key', 'auth_callback' => fn() => current_user_can('edit_posts')]);
 
         self::seedStatuses();
     }
